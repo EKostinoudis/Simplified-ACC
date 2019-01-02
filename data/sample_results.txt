@@ -1,0 +1,39 @@
+Επισυνάπτεται ένα δείγμα ήχου για πειραματισμό. Με την πρότυπη υλοποίηση μας επιτυγχάνουμε τα ακόλουθα (με παράθυρα KBD). Οι χρόνοι εκτέλεσης είναι ενδεικτικοί των απαιτούμενων υπολογισμών σε κάθε επίπεδο.
+
+Level 1
+=======
+Coding: time ellapsed is 0.46249 seconds
+Decoding: time ellapsed is 0.45712 seconds
+Channel 1 SNR: 307.0132 dB
+Channel 2 SNR: 307.0708 dB
+
+Level 2
+=======
+Coding: time ellapsed is 1.4017 seconds
+Decoding: time ellapsed is 0.26726 seconds
+Channel 1 SNR: 306.9824 dB
+Channel 2 SNR: 307.025 dB
+
+
+Level 3 (no Huffman)
+====================
+Coding: time ellapsed is 46.8264 seconds
+Decoding: time ellapsed is 0.50331 seconds
+Channel 1 SNR: 4.2054 dB
+Channel 2 SNR: 3.9512 dB
+
+
+Level 3
+=======
+Coding: time ellapsed is 151.3912 seconds
+Decoding: time ellapsed is 4.9037 seconds
+Uncompressed audio: 1.0795 MB (9055296 bits)
+Compressed struct : 149.8326 KB (1227429 bits)
+Compression ratio : 13.5548 % (x 7.3774)
+Channel 1 SNR: 4.2054 dB
+Channel 2 SNR: 3.9512 dB
+
+Επιπλέον σας δίνεται το κωδικοποιημένο και αποκωδικοποιημένο σήμα (σε μορφή .mat), ώστε να μπορέσετε να ακούσετε το αποτέλεσμα.
+
+
+Έχει ενδιαφέρον να δοκιμάσετε να πετύχετε παρόμοιο SNR χωρίς τη χρήση ψυχοακουστικού μοντέλου, δηλαδή θέτοντας σταθερή τιμή στους scalefactors του κβαντιστή για όλες τις μπάντες, και να συγκρίνετε το ακουστικό αποτέλεσμα. Μπορείτε να πετύχετε κάτι τέτοιο θέτοντας όλους τους scalefactors ίσους με το μηδέν. 
