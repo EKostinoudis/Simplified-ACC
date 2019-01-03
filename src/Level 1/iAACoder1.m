@@ -1,5 +1,5 @@
 function x = iAACoder1(AACSeq1, fNameOut)
-%AACODER1 Encodes a 2 channel wav file (Level 1).
+%IAACODER1 Decodes a 2 channel wav file (Level 1).
 % Arguments:
 % - AACSeq1: A Kx1 struct, where K is the number of the encoded frames.
 %       Each element contains:
