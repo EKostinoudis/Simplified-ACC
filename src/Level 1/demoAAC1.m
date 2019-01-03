@@ -6,7 +6,7 @@ function SNR = demoAAC1(fNameIn, fNameOut)
 % - fNameOut: The name of a ".wav" file that will be produced. The file
 %             will contain 2 sound channels with 48kHz sampling frequency.
 % Returns:
-% - SNR: Signal to noise ratio of the two channels after the
+% - SNR: Signal to noise ratio (in db) of the two channels after the
 %        encoding-decoding of Level 1. (2x1 table)
 %
 
