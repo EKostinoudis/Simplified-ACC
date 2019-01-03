@@ -7,7 +7,7 @@ function SNR = demoAAC2(fNameIn, fNameOut)
 %             will contain 2 sound channels with 48kHz sampling frequency.
 % Returns:
 % - SNR: Signal to noise ratio (in db) of the two channels after the
-%        encoding-decoding of Level 1. (2x1 table)
+%        encoding-decoding of Level 2. (2x1 table)
 %
 
 
