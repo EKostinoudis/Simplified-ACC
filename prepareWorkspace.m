@@ -20,7 +20,7 @@ addpath('data');
 addpath('src');
 
 if level == 1
-    
+    addpath('src/Level 1');
 elseif level == 2
     
 elseif level == 3
