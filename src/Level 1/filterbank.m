@@ -26,5 +26,58 @@ function frameF = filterbank(frameT, frameType, winType)
 %             (size 128x16)
 %
 
+% init W
+W = zeros(2048, 1);
+
+if frameType == "OLS"
+    if winType == "KBD"
+        W = [KDB_left(2048, 6); KDB_right(2048, 6)];
+    else
+        W = [sin_left(2048); sin_right(2048)];
+    end
+elseif frameType == ""
+    
+elseif frameType == ""
+        
+elseif frameType == ""
+    
+end
+
+end
+
+% Functions
+function W = KBD_left(N, a)
+M = N/2;
+
+% M+1-point Kaiser window
+w = kaiser(M+1, a);
+
+% Cumulative sum of w
+cumw = cumsum(w);
+        
+%W = sqrt([cumw(1:end-1); cumw(end:-1:2)] ./ cumw(end));
+W = sqrt(cumw(1:end-1) ./ cumw(end));
+end
+
+function W = KBD_right(N, a)
+M = N/2;
+
+% M+1-point Kaiser window
+w = kaiser(M+1, a);
+
+% Cumulative sum of w
+cumw = cumsum(w);
+        
+W = sqrt(cumw(end:-1:2) ./ cumw(end));
+end
+
+function W = sin_left(N)
+W = sin(pi./N * ((0:N/2-1) + 0.5));
+W = W(:); % make W column vector
+end
+
+function W = sin_right(N)
+W = sin(pi./N * ((N/2:N-1) + 0.5));
+W = W(:); % make W column vector
 end
 
