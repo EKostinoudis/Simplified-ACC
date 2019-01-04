@@ -16,6 +16,17 @@ function frameType = SSC(frameT, nextFrameT, prevFrameType)
 %       - "LPS": Standing for LONG_STOP_SEQUENCE
 %   
 
+% If prevFrameType has type LONG_STOP_SEQUENCE or LONG_START_SEQUENCE
+% the next frame can only be ONLY_LONG_SEQUENCE or EIGHT_SHORT_SEQUENCE
+% respectively
+if prevFrameType == "LSS"
+    frameType = "ESH";
+    return
+elseif prevFrameType == "LPS"
+    frameType = "OLS";
+    return
+end
+
 % Numerator and denominator coefficients of the filter
 num = [0.7548 -0.7548];
 den = [1 -0.5095];
@@ -43,7 +54,21 @@ end
 % Find the type of the i+1 frame 
 isNextESH = any(segEnergy(2:end, :) > 1e-3 & attackValues > 10);
 
-
+if prevFrameType == "ESH"
+    if any(isNextESH)
+        frameType = "ESH";
+    else 
+        frameType = "LPS";
+    end
+elseif prevFrameType == "OLS"
+    if any(isNextESH)
+        frameType = "LSS";
+    else 
+        frameType = "OLS";
+    end
+else
+    error('prevFrameType had none of the 4 possible values')
+end
 
 end
 
