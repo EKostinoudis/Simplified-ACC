@@ -16,6 +16,34 @@ function frameType = SSC(frameT, nextFrameT, prevFrameType)
 %       - "LPS": Standing for LONG_STOP_SEQUENCE
 %   
 
+% Numerator and denominator coefficients of the filter
+num = [0.7548 -0.7548];
+den = [1 -0.5095];
+
+% Apply the filter to each channel of nextFrameT
+filteredNextFrameT = filter(num, den, nextFrameT, [], 2);
+
+% Each segment (i) starts at 'segmentTimes(i) + 1'
+% and ends at 'segmentTimes(i + 1)'
+segmentTimes = 576:128:1600;
+
+% Energy of each segment
+segEnergy = zeros(8, 2);
+for i = 1:8
+    segEnergy(i, :) = sum(filteredNextFrameT(segmentTimes(i) + 1: ...
+        segmentTimes(i + 1), :).^2);
+end
+
+% Attack values 
+attackValues = zeros(7, 2);
+for i = 1:7
+    attackValues(i, :) = segEnergy(i + 1,:) .* i ./ (sum(segEnergy(1:i, :)));
+end
+
+% Find the type of the i+1 frame 
+isNextESH = any(segEnergy(2:end, :) > 1e-3 & attackValues > 10);
+
+
 
 end
 
