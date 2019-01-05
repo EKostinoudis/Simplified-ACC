@@ -26,28 +26,72 @@ function frameF = filterbank(frameT, frameType, winType)
 %             (size 128x16)
 %
 
-% init W
-W = zeros(2048, 1);
-
+% Calculate the window fuction (W) for each frameType
 if frameType == "OLS"
     if winType == "KBD"
-        W = [KDB_left(2048, 6); KDB_right(2048, 6)];
+        W = [KBD_left(2048); KBD_right(2048)];
     else
         W = [sin_left(2048); sin_right(2048)];
     end
-elseif frameType == ""
-    
-elseif frameType == ""
-        
-elseif frameType == ""
-    
+elseif frameType == "LSS"
+    if winType == "KBD"
+        W = [KBD_left(2048); ones(448,1); KBD_right(256); zeros(448,1)];
+    else
+        W = [sin_left(2048); ones(448,1); sin_right(256); zeros(448,1)];
+    end
+elseif frameType == "LPS"
+    if winType == "KBD"
+        W = [zeros(448,1); KBD_left(256); ones(448,1); KBD_right(2048)];
+    else
+        W = [zeros(448,1); sin_left(256); ones(448,1); sin_right(2048)];
+    end 
+elseif frameType == "ESH"
+    if winType == "KBD"
+        W = [KBD_left(256); KBD_right(256)];
+    else
+        W = [sin_left(256); sin_right(256)];
+    end
 end
 
+% init frameF
+frameF = zeros(1024, 2);    
+
+if frameType == "ESH"
+    % For every of the eight overlapping segments
+    frameIndex = (448:128:1344) + 1;
+    for i = 1:8
+        % Segment of the frameT
+        x = frameT(frameIndex(i):frameIndex(i) + 255, :);
+        
+        % Multiply with the window function
+        z = x .* W;
+        
+        % index of frameF
+        index = 128 * (i - 1) + 1;
+        
+        % Apply MDCT
+        frameF(index:index + 127, 1) = MDCT(z(:,1), 256);
+        frameF(index:index + 127, 2) = MDCT(z(:,2), 256);
+    end
+else
+    % Multiply with the window function
+    z = frameT .* W;
+    
+    % Apply MDCT
+    frameF(:, 1) = MDCT(z(:,1), 2048);
+    frameF(:, 2) = MDCT(z(:,2), 2048);
+end
 end
 
 % Functions
-function W = KBD_left(N, a)
+function W = KBD_left(N)
 M = N/2;
+
+if N == 2048 
+    a = 4;
+else
+    a = 6;
+end
 
 % M+1-point Kaiser window
 w = kaiser(M+1, a);
@@ -59,8 +103,14 @@ cumw = cumsum(w);
 W = sqrt(cumw(1:end-1) ./ cumw(end));
 end
 
-function W = KBD_right(N, a)
+function W = KBD_right(N)
 M = N/2;
+
+if N == 2048 
+    a = 4;
+else
+    a = 6;
+end
 
 % M+1-point Kaiser window
 w = kaiser(M+1, a);
@@ -81,3 +131,16 @@ W = sin(pi./N * ((N/2:N-1) + 0.5));
 W = W(:); % make W column vector
 end
 
+function X = MDCT(s, N)
+% Spectral coefficient
+kSeq = 0:N/2-1;
+
+% init X
+X = zeros(N/2, 1);
+
+% Calculate X
+for k = kSeq
+    X(k + 1) = 2 * dot(s, cos((2 * pi / N) * ((0:N-1) + (N/2 + 1)/2 ) ...
+        * (k + 0.5)));
+end
+end
