@@ -64,6 +64,17 @@ for frame = 1:totalFrames
     % TODO later (don't know the correct solution)
     AACSeq1(frame).winType = "KBD";
     
+    % Calculate the MDCT coeficients
+    frameF = filterbank(frameT, AACSeq1(frame).frameType, AACSeq1(frame).winType);
+    
+    % Put frameF into the struct with the correct forms
+    if AACSeq1(frame).frameType == "ESH"
+        AACSeq1(frame).chl.frameF = reshape(frameF(:, 1), [128, 8]);
+        AACSeq1(frame).chr.frameF = reshape(frameF(:, 2), [128, 8]);
+    else
+        AACSeq1(frame).chl.frameF = frameF(:, 1);
+        AACSeq1(frame).chr.frameF = frameF(:, 2);
+    end
 end
 
 end
