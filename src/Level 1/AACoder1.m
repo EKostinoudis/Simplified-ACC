@@ -24,6 +24,47 @@ function AACSeq1 = AACoder1(fNameIn)
 %                      any other frameType.
 %
 
+% Read the wav file 
+audio = audioread(fNameIn);
+
+% Total samples of audio
+samples = length(audio);
+
+% Frames for encoding
+totalFrames = floor(samples / 1024) - 1;
+
+% For every frame encode the data and put it on the struct vector AACSeq1
+for frame = 1:totalFrames
+    % Take the samples of the current frame
+    currentIndex = 1024 * (frame - 1) + 1;
+    frameT = audio(currentIndex:currentIndex + 2047, :);
+    
+    
+    % Calculate the type of the frame
+    if frame ~= 1 && frame ~= totalFrames
+        % Take the samples of the next frame
+        nextIndex = 1024 * frame + 1;
+        nextFrameT = audio(nextIndex:nextIndex + 2047, :);
+        AACSeq1(frame).frameType = SSC(frameT, nextFrameT, AACSeq1(frame - 1).frameType);
+    elseif frame == 1
+        % First frame
+        AACSeq1(frame).frameType = "OLS";
+    else
+        % Last frame
+        if AACSeq1(frame - 1).frameType == "LSS"
+            AACSeq1(frame).frameType = "ESH";
+        elseif AACSeq1(frame - 1).frameType == "LPS"
+            AACSeq1(frame).frameType = "OLS";
+        else
+            % OLS or ESH
+            AACSeq1(frame).frameType = AACSeq1(frame - 1).frameType;
+        end
+    end
+        
+    % TODO later (don't know the correct solution)
+    AACSeq1(frame).winType = "KBD";
+    
+end
 
 end
 
