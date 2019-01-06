@@ -25,6 +25,34 @@ function x = iAACoder1(AACSeq1, fNameOut)
 % - x: If the fNameOut argument is not provided, the decoded sample
 %      sequence is stored in the returned variable x.
 
+totalFrames = length(AACSeq1);
+
+% init audio
+audio = zeros((totalFrames + 1) * 1024, 2);
+
+for frame = 1:totalFrames
+    % Construct frameF
+    if AACSeq1(frame).frameType == "ESH"
+        frameF = [reshape(AACSeq1(frame).chl.frameF, [1024, 1]), ...
+            reshape(AACSeq1(frame).chr.frameF, [1024, 1])];
+    else
+        frameF = [AACSeq1(frame).chl.frameF, AACSeq1(frame).chr.frameF];
+    end
+    
+    % Apply IMDCT to the current frame
+    frameT = iFilterbank(frameF, AACSeq1(frame).frameType, AACSeq1(frame).winType);
+    
+    % Add the frameT to the audio
+    currentIndex = 1024 * (frame - 1) + 1;
+    audio(currentIndex:currentIndex + 2047, :) = audio(currentIndex:currentIndex + 2047, :) ...
+        + frameT;
+end
+
+if nargout == 1
+    x = audio;
+else
+    audiowrite(char(fNameOut), audio, 4800);
+end
 
 end
 
