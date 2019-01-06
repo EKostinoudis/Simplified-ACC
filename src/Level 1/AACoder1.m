@@ -24,8 +24,8 @@ function AACSeq1 = AACoder1(fNameIn)
 %                      any other frameType.
 %
 
-% Read the wav file 
-audio = audioread(fNameIn);
+% Read the wav file, from either string or char array
+audio = audioread(char(fNameIn));
 
 % Total samples of audio
 samples = length(audio);
@@ -33,6 +33,7 @@ samples = length(audio);
 % Frames for encoding
 totalFrames = floor(samples / 1024) - 1;
 
+% AACSeq1 array's memory preallocation
 AACSeq1 = struct('frameType', "  ", 'winType', "   ", 'chl', struct('frameF', zeros(1024,1)), 'chr', struct('frameF', zeros(1024,1)));
 AACSeq1(totalFrames, 1) = AACSeq1;
 
