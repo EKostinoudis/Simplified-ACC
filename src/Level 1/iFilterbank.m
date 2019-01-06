@@ -26,6 +26,54 @@ function frameT = iFilterbank(frameF, frameType, winType)
 % - frameT:     The frame in the time domain.
 %   
 
+% Calculate the window fuction (W) for each frameType
+if frameType == "OLS"
+    if winType == "KBD"
+        W = [KBD_left(2048); KBD_right(2048)];
+    else
+        W = [sin_left(2048); sin_right(2048)];
+    end
+elseif frameType == "LSS"
+    if winType == "KBD"
+        W = [KBD_left(2048); ones(448,1); KBD_right(256); zeros(448,1)];
+    else
+        W = [sin_left(2048); ones(448,1); sin_right(256); zeros(448,1)];
+    end
+elseif frameType == "LPS"
+    if winType == "KBD"
+        W = [zeros(448,1); KBD_left(256); ones(448,1); KBD_right(2048)];
+    else
+        W = [zeros(448,1); sin_left(256); ones(448,1); sin_right(2048)];
+    end 
+elseif frameType == "ESH"
+    if winType == "KBD"
+        W = [KBD_left(256); KBD_right(256)];
+    else
+        W = [sin_left(256); sin_right(256)];
+    end
+end
+
+% init frameT
+frameT = zeros(2048, 2);
+
+if frameType == "ESH"
+    for i = 1:8
+        % index of frameF and frameT
+        indexF = 128 * (i - 1) + 1;
+        indexT = 256 * (i - 1) + 1;
+        
+        % apply IMDCT to each frame and mulitply it with the window function
+        frameT(indexT:indexT + 255, 1) = IMDCT(frameF(indexF:indexF + 127, 1), 256) .* W;
+        frameT(indexT:indexT + 255, 2) = IMDCT(frameF(indexF:indexF + 127, 2), 256) .* W;
+        
+        
+    end
+else
+    % apply IMDCT to each frame and mulitply it with the window function
+    frameT(:, 1) = IMDCT(frameF(:, 1), 2048) .* W;
+    frameT(:, 2) = IMDCT(frameF(:, 2), 2048) .* W;
+end
+
 end
 
 
