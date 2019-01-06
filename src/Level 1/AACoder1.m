@@ -33,6 +33,9 @@ samples = length(audio);
 % Frames for encoding
 totalFrames = floor(samples / 1024) - 1;
 
+AACSeq1 = struct('frameType', "  ", 'winType', "   ", 'chl', struct('frameF', zeros(1024,1)), 'chr', struct('frameF', zeros(1024,1)));
+AACSeq1(totalFrames, 1) = AACSeq1;
+
 % For every frame encode the data and put it on the struct vector AACSeq1
 for frame = 1:totalFrames
     % Take the samples of the current frame
