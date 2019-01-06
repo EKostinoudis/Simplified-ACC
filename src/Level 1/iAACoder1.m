@@ -51,7 +51,7 @@ end
 if nargout == 1
     x = audio;
 else
-    audiowrite(char(fNameOut), audio, 4800);
+    audiowrite(char(fNameOut), audio, 48000);
 end
 
 end
