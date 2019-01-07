@@ -10,6 +10,17 @@ function SNR = demoAAC1(fNameIn, fNameOut)
 %        encoding-decoding of Level 1. (2x1 table)
 %
 
+audioIn = audioread(char(fNameIn));
+AACSeq1 = AACoder1(fNameIn);
+audioOut = iAACoder1(AACSeq1, fNameOut);
 
+% 0-padding audioOut to match audioIn size
+audioOut = [audioOut; zeros(length(audioIn) - length(audioOut), 2)];
+
+% Calculate noise
+noise = audioIn - audioOut;
+
+% Calculate SNR
+SNR = [snr(audioIn(:, 1), noise(:, 1)); snr(audioIn(:, 2), noise(:, 2))];
 end
 

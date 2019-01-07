@@ -48,10 +48,11 @@ for frame = 1:totalFrames
         + frameT;
 end
 
+% Write the audio to the file
+audiowrite(char(fNameOut), audio, 48000);
+
 if nargout == 1
     x = audio;
-else
-    audiowrite(char(fNameOut), audio, 48000);
 end
 
 end
