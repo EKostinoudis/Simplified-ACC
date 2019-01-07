@@ -60,11 +60,13 @@ if frameType == "ESH"
     for i = 1:8
         % index of frameF and frameT
         indexF = 128 * (i - 1) + 1;
-        indexT = 256 * (i - 1) + 1;
+        indexT = indexF + 448;
         
         % apply IMDCT to each frame and mulitply it with the window function
-        frameT(indexT:indexT + 255, 1) = IMDCT(frameF(indexF:indexF + 127, 1), 256) .* W;
-        frameT(indexT:indexT + 255, 2) = IMDCT(frameF(indexF:indexF + 127, 2), 256) .* W;
+        frameT(indexT:indexT + 255, 1) = frameT(indexT:indexT + 255, 1) + ... 
+            IMDCT(frameF(indexF:indexF + 127, 1), 256) .* W;
+        frameT(indexT:indexT + 255, 2) = frameT(indexT:indexT + 255, 2) + ... 
+            IMDCT(frameF(indexF:indexF + 127, 2), 256) .* W;
         
         
     end
