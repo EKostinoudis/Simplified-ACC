@@ -48,7 +48,7 @@ end
 % Attack values 
 attackValues = zeros(7, 2);
 for i = 1:7
-    attackValues(i, :) = segEnergy(i + 1,:) .* i ./ (sum(segEnergy(1:i, :)));
+    attackValues(i, :) = segEnergy(i + 1,:) .* i ./ (sum(segEnergy(1:i, :), 1));
 end
 
 % Find the type of the i+1 frame 
