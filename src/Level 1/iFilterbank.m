@@ -67,8 +67,6 @@ if frameType == "ESH"
             IMDCT(frameF(indexF:indexF + 127, 1), 256) .* W;
         frameT(indexT:indexT + 255, 2) = frameT(indexT:indexT + 255, 2) + ... 
             IMDCT(frameF(indexF:indexF + 127, 2), 256) .* W;
-        
-        
     end
 else
     % apply IMDCT to each frame and mulitply it with the window function
@@ -95,7 +93,6 @@ w = kaiser(M+1, a);
 % Cumulative sum of w
 cumw = cumsum(w);
         
-%W = sqrt([cumw(1:end-1); cumw(end:-1:2)] ./ cumw(end));
 W = sqrt(cumw(1:end-1) ./ cumw(end));
 end
 

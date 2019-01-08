@@ -99,7 +99,6 @@ w = kaiser(M+1, a);
 % Cumulative sum of w
 cumw = cumsum(w);
         
-%W = sqrt([cumw(1:end-1); cumw(end:-1:2)] ./ cumw(end));
 W = sqrt(cumw(1:end-1) ./ cumw(end));
 end
 
