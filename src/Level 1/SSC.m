@@ -32,7 +32,7 @@ num = [0.7548 -0.7548];
 den = [1 -0.5095];
 
 % Apply the filter to each channel of nextFrameT
-filteredNextFrameT = filter(num, den, nextFrameT, [], 2);
+filteredNextFrameT = filter(num, den, nextFrameT, [], 1);
 
 % Each segment (i) starts at 'segmentTimes(i) + 1'
 % and ends at 'segmentTimes(i + 1)'
