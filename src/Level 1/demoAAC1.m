@@ -14,8 +14,9 @@ audioIn = audioread(char(fNameIn));
 AACSeq1 = AACoder1(fNameIn);
 audioOut = iAACoder1(AACSeq1, fNameOut);
 
-% 0-padding audioOut to match audioIn size
-audioOut = [audioOut; zeros(length(audioIn) - length(audioOut), 2)];
+% Remove the frames that aren't overlapping in audioIn and audioOut
+audioOut = audioOut(1025:end - 1024, :);
+audioIn = audioIn(1025:length(audioOut) + 1024, :);
 
 % Calculate noise
 noise = audioIn - audioOut;

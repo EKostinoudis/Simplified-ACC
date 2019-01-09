@@ -117,7 +117,7 @@ w = kaiser(M+1, a);
 % Cumulative sum of w
 cumw = cumsum(w);
         
-W = sqrt(cumw(end:-1:2) ./ cumw(end));
+W = sqrt(cumw(end-1:-1:1) ./ cumw(end));
 end
 
 function W = sin_left(N)
@@ -139,7 +139,6 @@ X = zeros(N/2, 1);
 
 % Calculate X
 for k = kSeq
-    X(k + 1) = 2 * dot(s, cos((2 * pi / N) * ((0:N-1) + (N/2 + 1)/2 ) ...
-        * (k + 0.5)));
+    X(k + 1) = 2 * (cos((2 * pi / N) * ((0:N-1) + (N/2 + 1)/2 ) * (k + 0.5)) * s);
 end
 end

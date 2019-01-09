@@ -65,7 +65,7 @@ for frame = 1:totalFrames
         end
     end
         
-    % TODO later (don't know the correct solution)
+    % Chose window type here ("KBD" or "SIN")
     AACSeq1(frame).winType = "KBD";
     
     % Calculate the MDCT coeficients
@@ -80,6 +80,4 @@ for frame = 1:totalFrames
         AACSeq1(frame).chr.frameF = frameF(:, 2);
     end
 end
-
 end
-
