@@ -10,6 +10,18 @@ function SNR = demoAAC2(fNameIn, fNameOut)
 %        encoding-decoding of Level 2. (2x1 table)
 %
 
+audioIn = audioread(char(fNameIn));
+AACSeq2 = AACoder2(fNameIn);
+audioOut = iAACoder2(AACSeq2, fNameOut);
 
+% Remove the frames that aren't overlapping in audioIn and audioOut
+audioOut = audioOut(1025:end - 1024, :);
+audioIn = audioIn(1025:length(audioOut) + 1024, :);
+
+% Calculate noise
+noise = audioIn - audioOut;
+
+% Calculate SNR
+SNR = [snr(audioIn(:, 1), noise(:, 1)); snr(audioIn(:, 2), noise(:, 2))];
 end
 

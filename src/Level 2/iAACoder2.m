@@ -30,6 +30,38 @@ function x = iAACoder2(AACSeq2, fNameOut)
 %      sequence is stored in the returned variable x.
 %
 
+totalFrames = length(AACSeq2);
+
+% init audio
+audio = zeros((totalFrames + 1) * 1024, 2);
+
+for frame = 1:totalFrames
+    % Apply iTNS
+    frameFoutLeft = iTNS(AACSeq2(frame).chl.frameF, AACSeq2(frame).frameType, AACSeq2(frame).chl.TNScoeffs);
+    frameFoutRight = iTNS(AACSeq2(frame).chr.frameF, AACSeq2(frame).frameType, AACSeq2(frame).chr.TNScoeffs);    
+    
+    % Construct frameF
+    if AACSeq2(frame).frameType == "ESH"
+        frameF = [reshape(frameFoutLeft, [1024, 1]), reshape(frameFoutRight, [1024, 1])];
+    else
+        frameF = [frameFoutLeft, frameFoutRight];
+    end
+    
+    % Apply IMDCT to the current frame
+    frameT = iFilterbank(frameF, AACSeq2(frame).frameType, AACSeq2(frame).winType);
+    
+    % Add the frameT to the audio
+    currentIndex = 1024 * (frame - 1) + 1;
+    audio(currentIndex:currentIndex + 2047, :) = audio(currentIndex:currentIndex + 2047, :) ...
+        + frameT;
+end
+
+% Write the audio to the file
+audiowrite(char(fNameOut), audio, 48000);
+
+if nargout == 1
+    x = audio;
+end
 
 end
 
