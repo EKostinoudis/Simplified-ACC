@@ -57,6 +57,9 @@ Xw = frameFin./Sw;
 
 corr = zeros(9, cols);
 a = zeros(4, cols);
+TNScoeffs = zeros(4, cols);
+frameFout = zeros(rows, cols);
+
 for i = 1:cols
     % Take the correlation of Xw
     corr(:, i) = xcorr(Xw(:, i), 4);
@@ -74,8 +77,13 @@ for i = 1:cols
         % Construct the new a
         a(index, i) = R.*exp(1i*theta);
     end
+    
+    % Quantize a
+    [~, realQuants] = quantiz(real(a(:, i)), -0.8:0.1:0.8, -0.85:0.1:0.85);
+    [~, imagQuants] = quantiz(imag(a(:, i)), -0.8:0.1:0.8, -0.85:0.1:0.85);
+    TNScoeffs(:, i) = realQuants + 1i*imagQuants;
+    
+    % Apply the filter
+    frameFout(:, i) = filter(a(:, i), 1, frameFin(:, i));
 end
-
-
 end
-

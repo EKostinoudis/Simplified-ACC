@@ -17,5 +17,20 @@ function frameFout = iTNS(frameFin, frameType, TNScoeffs)
 %               (128x8 for "ESH" or 1024x1 for any other frameType)
 %
 
+if frameType == "ESH"
+    rows = 128;
+    cols = 8;
+else
+    rows = 1024;
+    cols = 1;
+end
+
+% Init framFout
+frameFout = zeros(rows, cols);
+
+for i = 1:cols
+    % Apply the inverse filter
+    frameFout(:, i) = filter(1, TNScoeffs(:, i), frameFin(:, i));
+end
 end
 
