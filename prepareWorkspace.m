@@ -43,9 +43,12 @@ addpath('src');
 if level == 1
     addpath('src/Level 1');
 elseif level == 2
+    addpath('src/Level 1');
     addpath('src/Level 2');
 elseif level == 3
     addpath('src/huffman');
+    addpath('src/Level 1');
+    addpath('src/Level 2');
     addpath('src/Level 3');
 end
 
