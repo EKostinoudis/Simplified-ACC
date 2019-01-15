@@ -31,6 +31,35 @@ function [S, sfc, G] = AACquantizer(frameF, frameType, SMR)
 %       or a scalar for any other frameType)
 %
 
-
+if frameType == "ESH"
+    table = load('TableB219.mat', 'B219b');
+    table = table.B219b;
+    rows = 256;
+    NB = length(table);
+    
+else
+    table = load('TableB219.mat', 'B219a');
+    table = table.B219a;
+    rows = 2048;
+    NB = length(table);
+    
+    % Calculate the power
+    wlow = table(:, 2) + 1;
+    whigh = table(:, 3) + 1;
+    P = zeros(NB, 1);
+    
+    for b = 1:NB
+        indexes = wlow(b):whigh(b);
+        P(b) = sum(frameF(indexes).^2);
+    end
+    
+    % Calculate the audibility thresholds
+    T = P ./ SMR;
+    
+    % Init scalefactor gain
+    a = ones(NB, 1) * (16 / 3 * log2(max(frameF)^(3/4) / 8191));
+    
+    
+end
 end
 

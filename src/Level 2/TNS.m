@@ -66,24 +66,44 @@ for i = 1:cols
 
     % Calculate the linear prediction coefficients
     a(:, i) = toeplitz(corr(5:8, i)) \ corr(6:9, i);
-
-    % Check if the FIR filter is unstable and fix it
-    if any(abs(a(:, i)) > 1)
-        R = abs(a(:, i));
-        index = R > 1;
-        theta = angle(a(index, i));
-        R = 1 ./ R(index);
-
-        % Construct the new a
-        a(index, i) = R.*exp(1i*theta);
-    end
     
     % Quantize a
-    [~, realQuants] = quantiz(real(a(:, i)), -0.8:0.1:0.8, -0.85:0.1:0.85);
-    [~, imagQuants] = quantiz(imag(a(:, i)), -0.8:0.1:0.8, -0.85:0.1:0.85);
-    TNScoeffs(:, i) = realQuants + 1i*imagQuants;
+    [TNScoeffs(:, i), quants] = quantiz(a(:, i), -0.7:0.1:0.7, -0.75:0.1:0.75);
+    
+    % Check if the FIR filter is unstable and fix it
+    [coefsOut, TNScoeffs(:, i)] = checkStability([1; -quants(:)], TNScoeffs(:, i));
     
     % Apply the filter
-    frameFout(:, i) = filter(a(:, i), 1, frameFin(:, i));
+    frameFout(:, i) = filter(coefsOut, 1, frameFin(:, i));
+end
+end
+
+% Takes the coefficients of the filter and check if they are stable
+% If yes return the same
+% If not produce new stable
+function [coefsOut, indexesOut] = checkStability(coefsIn, indexesIn)
+% Calculate the filter poles
+poles = roots(coefsIn);
+    
+if any(abs(poles) > 1)
+    R = abs(poles);
+    index = R > 1;
+    theta = angle(poles(index));
+    R = 1 ./ R(index);
+
+    % Calculate the new poles
+    poles(index) = R.*exp(1i*theta);
+
+    % Construct the new coefficients
+    coefsOut = poly(poles);
+    
+    % Quantize 
+    [indexes, quants] = quantiz(-coefsOut(2:5), -0.7:0.1:0.7, -0.75:0.1:0.75);
+    
+    % Check if the new values are stable
+    [coefsOut, indexesOut] = checkStability([1; -quants(:)], indexes);
+else
+    coefsOut = coefsIn;
+    indexesOut = indexesIn;
 end
 end

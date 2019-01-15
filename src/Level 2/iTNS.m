@@ -29,8 +29,10 @@ end
 frameFout = zeros(rows, cols);
 
 for i = 1:cols
+    quants = (TNScoeffs(:, i) * 0.1) - 0.75;
+    
     % Apply the inverse filter
-    frameFout(:, i) = filter(1, TNScoeffs(:, i), frameFin(:, i));
+    frameFout(:, i) = filter(1, [1; -quants], frameFin(:, i));
 end
 end
 
