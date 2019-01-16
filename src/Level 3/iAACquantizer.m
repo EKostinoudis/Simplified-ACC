@@ -28,5 +28,29 @@ function frameF = iAACquantizer(S, sfc, G, frameType)
 %             (size 128x8)
 %
 
+if frameType == "ESH"
+    table = load('TableB219.mat', 'B219b');
+    table = table.B219b;
+    rows = 128;
+    cols = 8;
+    NB = length(table);
+    S = reshape(S, [rows, cols]);
+else
+    table = load('TableB219.mat', 'B219a');
+    table = table.B219a;
+    rows = 1024;
+    cols = 1;
+    NB = length(table);
+end
 
+frameF = zeros(rows, cols);
+
+for i = 1:cols
+    % Calculate a
+    a = cumsum(sfc(:, i));
+    
+    for b = 1:NB
+        indexes = wlow(b):whigh(b);
+        frameF(indexes, i) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(a(b)/4);
+    end
 end
