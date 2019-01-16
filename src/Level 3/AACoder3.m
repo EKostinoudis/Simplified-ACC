@@ -50,14 +50,14 @@ audio = audioread(char(fNameIn));
 samples = length(audio);
 
 % Frames for encoding
-totalFrames = floor(samples / 1024) - 1;
+totalFrames = floor(samples / 1024) - 1 - 2;
 
 % AACSeq3 array's memory preallocation
 AACSeq3 = struct('frameType', "  ", 'winType', "   ", 'chl', struct(), 'chr', struct());
 AACSeq3(totalFrames, 1) = AACSeq3;
 
 % For every frame encode the data and put it on the struct vector AACSeq3
-for frame = 1:totalFrames - 2
+for frame = 1:totalFrames
     % Take the samples of the current, prev1 and prev2 frames
     currentIndex = 1024 * (frame + 1) + 1;
     prev1Index = currentIndex - 1024;
@@ -118,8 +118,8 @@ for frame = 1:totalFrames - 2
     [AACSeq3(frame).chr.stream, AACSeq3(frame).chr.codebook] = encodeHuff(S_R, loadLUT());
     
     % Apply Huffman coding to sfc
-    [AACSeq3(frame).chl.sfc, ~] = encodeHuff(round(sfc_L(2:end)), loadLUT(), 12);
-    [AACSeq3(frame).chr.sfc, ~] = encodeHuff(round(sfc_R(2:end)), loadLUT(), 12);
+    [AACSeq3(frame).chl.sfc, ~] = encodeHuff(sfc_L(:), loadLUT(), 12);
+    [AACSeq3(frame).chr.sfc, ~] = encodeHuff(sfc_R(:), loadLUT(), 12);
     
     % Calculate the audibility thresholds
     AACSeq3(frame).chl.T = calculateT(frameF_L, SMR_L, AACSeq3(frame).frameType);

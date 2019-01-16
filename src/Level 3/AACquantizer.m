@@ -48,7 +48,7 @@ wlow = table(:, 2) + 1;
 whigh = table(:, 3) + 1;
 P = zeros(NB, 1);    
 S = zeros(rows, cols);
-sfc = zeros(NB, cols);
+sfc = zeros(NB - 1, cols);
 G = zeros(1, cols);
 
 for i = 1:cols
@@ -102,7 +102,7 @@ for i = 1:cols
     end
     
     % Calculate sfc
-    sfc(:, i) = [a(1); diff(a)];
+    sfc(:, i) = round(diff(a));
     
     G(i) = a(1);
 end

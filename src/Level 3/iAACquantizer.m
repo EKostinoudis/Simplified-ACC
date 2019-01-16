@@ -43,11 +43,13 @@ else
     NB = length(table);
 end
 
+wlow = table(:, 2) + 1;
+whigh = table(:, 3) + 1;
 frameF = zeros(rows, cols);
 
 for i = 1:cols
     % Calculate a
-    a = cumsum(sfc(:, i));
+    a = cumsum([G(i); sfc(:, i)]);
     
     for b = 1:NB
         indexes = wlow(b):whigh(b);
