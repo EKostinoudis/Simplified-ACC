@@ -35,9 +35,10 @@ if frameType == "ESH"
     SMR = zeros(length(table), 8);
     for i = 1:8
         % Calculate the complex spectrum of the input signals
-        sw = subFrames(:, i + 2) .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
-        swprev1 = subFrames(:, i + 1) .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
-        swprev2 = subFrames(:, i) .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
+        t = (0:rows - 1).';
+        sw = subFrames(:, i + 2) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+        swprev1 = subFrames(:, i + 1) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+        swprev2 = subFrames(:, i) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
 
         % Apply FFT to the signals
         swT = fft(sw);
@@ -106,9 +107,10 @@ else
     NB = length(table);
 
     % Calculate the complex spectrum of the input signals
-    sw = frameT .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
-    swprev1 = frameTprev1 .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
-    swprev2 = frameTprev2 .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
+    t = (0:rows - 1).';
+    sw = frameT .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+    swprev1 = frameTprev1 .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+    swprev2 = frameTprev2 .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
 
     % Apply FFT to the signals
     swT = fft(sw);
@@ -152,13 +154,14 @@ else
 
     % Tonality index (0<tb<1)
     tb = -0.299 - 0.43 * log(cb);
-tb(tb<=0) = eps();
-tb(tb>=1) = 1 - eps();
+% tb(tb<=0) = eps();
+% tb(tb>=1) = 1 - eps();
     % Calculate SNR
     SNR = tb * 18 + (1 - tb) * 6;
 
     % Calculate the power ratio
     bc = 10.^(-SNR / 10);
+    
 
     % Calculate of actual energy threshold
     nb = en .* bc;
