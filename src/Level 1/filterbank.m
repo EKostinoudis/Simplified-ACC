@@ -70,16 +70,16 @@ if frameType == "ESH"
         index = 128 * (i - 1) + 1;
         
         % Apply MDCT
-        frameF(index:index + 127, 1) = MDCT(z(:,1), 256);
-        frameF(index:index + 127, 2) = MDCT(z(:,2), 256);
+        frameF(index:index + 127, 1) = MDCT(z(:,1));
+        frameF(index:index + 127, 2) = MDCT(z(:,2));
     end
 else
     % Multiply with the window function
     z = frameT .* W;
     
     % Apply MDCT
-    frameF(:, 1) = MDCT(z(:,1), 2048);
-    frameF(:, 2) = MDCT(z(:,2), 2048);
+    frameF(:, 1) = MDCT(z(:,1));
+    frameF(:, 2) = MDCT(z(:,2));
 end
 end
 
@@ -130,15 +130,32 @@ W = sin(pi./N * ((N/2:N-1) + 0.5));
 W = W(:); % make W column vector
 end
 
-function X = MDCT(s, N)
-% Spectral coefficient
-kSeq = 0:N/2-1;
+function X = MDCT(s)
+% Calculate length
+N = length(s);
 
-% init X
-X = zeros(N/2, 1);
+% Used many times
+N2 = N / 2;
+N4 = N / 4;
+seq = (0:N4 - 1).';
 
-% Calculate X
-for k = kSeq
-    X(k + 1) = 2 * (cos((2 * pi / N) * ((0:N-1) + (N/2 + 1)/2 ) * (k + 0.5)) * s);
-end
+% Rotate s
+s_hat = zeros(N2, 1);
+s_hat(seq + 1) = -s(seq + 1 + 3 * N4);
+seq2 = N4:N-1;
+s_hat(seq2 + 1) = s(seq2 + 1 - N4);
+
+sk = (s_hat(2 * seq + 1) - s_hat(N - 2 * seq)) - 1i * (s_hat(N2 + 2 * seq + 1) - s_hat(N2 - 2 * seq));
+
+e = exp(-1i * 2 * pi / N * (seq + 1/8));
+
+se = 0.5 * e .* sk;
+
+Xm = fft(se, N4);
+
+Xm = (2 / sqrt(N)) * e .* Xm;
+
+X = zeros(N2, 1);
+X(2 * seq + 1) = real(Xm(seq + 1));
+X(N2 - 2 * seq) = -imag(Xm(seq+ 1));
 end

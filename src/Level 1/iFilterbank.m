@@ -64,14 +64,14 @@ if frameType == "ESH"
         
         % apply IMDCT to each frame and mulitply it with the window function
         frameT(indexT:indexT + 255, 1) = frameT(indexT:indexT + 255, 1) + ... 
-            IMDCT(frameF(indexF:indexF + 127, 1), 256) .* W;
+            IMDCT(frameF(indexF:indexF + 127, 1)) .* W;
         frameT(indexT:indexT + 255, 2) = frameT(indexT:indexT + 255, 2) + ... 
-            IMDCT(frameF(indexF:indexF + 127, 2), 256) .* W;
+            IMDCT(frameF(indexF:indexF + 127, 2)) .* W;
     end
 else
     % apply IMDCT to each frame and mulitply it with the window function
-    frameT(:, 1) = IMDCT(frameF(:, 1), 2048) .* W;
-    frameT(:, 2) = IMDCT(frameF(:, 2), 2048) .* W;
+    frameT(:, 1) = IMDCT(frameF(:, 1)) .* W;
+    frameT(:, 2) = IMDCT(frameF(:, 2)) .* W;
 end
 
 end
@@ -124,15 +124,25 @@ W = sin(pi./N * ((N/2:N-1) + 0.5));
 W = W(:); % make W column vector
 end
 
-function s = IMDCT(X, N)
-% Spectral coefficient
-nSeq = 0:N-1;
+function s = IMDCT(X)
+N2 = length(X);
+N4 = N2 / 2;
+N = 2 * N2;
+seq = (0:N4 - 1).';
 
-% init s
-s = zeros(N, 1);
+e = exp(-1i * 2 * pi / N * (seq + 1/8));
 
-% Calculate s
-for n = nSeq
-    s(n + 1) = 2 / N * (cos((2 * pi / N) * (n + (N/2 + 1)/2 ) * ((0:N/2-1) + 0.5)) * X);
-end
+X_hat = X(2 * seq + 1) + 1i * X(N2 - 2 * seq);
+X_hat = 0.5 * e .* X_hat;
+
+sm = fft(X_hat, N4);
+sm = 8 / sqrt(N) * e .* sm;
+
+seq2 = 1:2:N - 1;
+sr = zeros(N, 1);
+sr(2 * seq + 1) = real(sm(seq + 1));
+sr(N2 + 2 * seq + 1) = imag(sm(seq + 1));
+sr(seq2 + 1) = -sr(N - seq2);
+
+s = [sr((N4 + 1):N); -sr(1:N4)];
 end
