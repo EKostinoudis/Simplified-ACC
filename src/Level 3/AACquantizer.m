@@ -59,7 +59,7 @@ for i = 1:cols
     end
     
     % Calculate the audibility thresholds
-    T = P ./ SMR;
+    T = P ./ SMR(:, i);
     
     % Init scalefactor gain
     a = zeros(NB, 1) + (16 / 3 * log2(max(frameF(:, i))^(3/4) / 8191));

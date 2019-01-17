@@ -70,7 +70,7 @@ if frameType == "ESH"
 
         % Convolve the partitioned energy and unpredictability with the spreading function
         input = repmat(1:NB, NB, 1);
-        sp = arrayfun(@(bb, b) spreadingfun(bb, b, bval), input, input);
+        sp = arrayfun(@(bb, b) spreadingfun(bval(bb), bval(b)), input, input');
 
         ecb = sp * e;
         ct = sp * c2;
@@ -104,7 +104,6 @@ else
     rows = 2048;
     bval = table(:, 5);
     NB = length(table);
-
 
     % Calculate the complex spectrum of the input signals
     sw = frameT .* (0.5 - 0.5 * cos(pi * ((0:rows - 1) + 0.5) / rows));
@@ -142,7 +141,7 @@ else
 
     % Convolve the partitioned energy and unpredictability with the spreading function
     input = repmat(1:NB, NB, 1);
-    sp = arrayfun(@(bb, b) spreadingfun(bb, b, bval), input, input);
+    sp = arrayfun(@(bb, b) spreadingfun(bval(bb), bval(b)), input, input');
 
     ecb = sp * e;
     ct = sp * c2;
@@ -151,9 +150,10 @@ else
     cb = ct ./ ecb;
     en = ecb ./ sum(sp, 2);
 
-    % Tonality index
+    % Tonality index (0<tb<1)
     tb = -0.299 - 0.43 * log(cb);
-
+tb(tb<=0) = eps();
+tb(tb>=1) = 1 - eps();
     % Calculate SNR
     SNR = tb * 18 + (1 - tb) * 6;
 
@@ -173,11 +173,11 @@ end
 
 end
 
-function x = spreadingfun(i, j, bval)
-if i >= j
-    tmpx = 3 * (bval(j) - bval(i));
+function x = spreadingfun(i, j)
+if j >= i
+    tmpx = 3 * (j - i);
 else
-    tmpx = 1.5 * (bval(j) - bval(i));
+    tmpx = 1.5 * (j - i);
 end
 
 tmpz = 8 * min([(tmpx - 0.5)^2 - 2 * (tmpx - 0.5), 0]);
