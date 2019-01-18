@@ -53,6 +53,6 @@ for i = 1:cols
     
     for b = 1:NB
         indexes = wlow(b):whigh(b);
-        frameF(indexes, i) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(a(b)/4);
+        frameF(indexes, i) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(-a(b)/4);
     end
 end

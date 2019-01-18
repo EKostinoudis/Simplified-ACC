@@ -50,7 +50,7 @@ audio = audioread(char(fNameIn));
 samples = length(audio);
 
 % Frames for encoding
-totalFrames = floor(samples / 1024) - 1 - 2;
+totalFrames = floor(samples / 1024) - 1;
 
 % AACSeq3 array's memory preallocation
 AACSeq3 = struct('frameType', "  ", 'winType', "   ", 'chl', struct(), 'chr', struct());
@@ -59,17 +59,22 @@ AACSeq3(totalFrames, 1) = AACSeq3;
 % For every frame encode the data and put it on the struct vector AACSeq3
 for frame = 1:totalFrames
     % Take the samples of the current, prev1 and prev2 frames
-    currentIndex = 1024 * (frame + 1) + 1;
-    prev1Index = currentIndex - 1024;
-    prev2Index = currentIndex - 2048;
+    currentIndex = 1024 * (frame - 1) + 1;
     frameT = audio(currentIndex:currentIndex + 2047, :);
-    frameTprev1 = audio(prev1Index:prev1Index + 2047, :);
-    frameTprev2 = audio(prev2Index:prev2Index + 2047, :);
+    if frame >= 3 
+        prev1Index = currentIndex - 1024;
+        prev2Index = currentIndex - 2048;
+        frameTprev1 = audio(prev1Index:prev1Index + 2047, :);
+        frameTprev2 = audio(prev2Index:prev2Index + 2047, :);
+    else
+        frameTprev1 = zeros(2048, 2);
+        frameTprev2 = zeros(2048, 2);
+    end
     
     % Calculate the type of the frame
     if frame ~= 1 && frame ~= totalFrames
         % Take the samples of the next frame
-        nextIndex = 1024 * frame + 1;
+        nextIndex = currentIndex + 1024;
         nextFrameT = audio(nextIndex:nextIndex + 2047, :);
         AACSeq3(frame).frameType = SSC(frameT, nextFrameT, AACSeq3(frame - 1).frameType);
     elseif frame == 1

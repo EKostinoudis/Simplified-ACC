@@ -75,14 +75,14 @@ for i = 1:cols
                 indexes = wlow(b):whigh(b);
 
                 % Quantize and dequantize MDCT coeffs
-                S(indexes, i) = sign(frameF(indexes, i)) .* round((abs(frameF(indexes, i)) * 2^(-a(b)/4)).^(3/4) + 0.4054);
-                X_hat(indexes) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(a(b)/4);
+                S(indexes, i) = sign(frameF(indexes, i)) .* round((abs(frameF(indexes, i)) * 2^(a(b)/4)).^(3/4) + 0.4054);
+                X_hat(indexes) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(-a(b)/4);
 
                 % Calculate the power of the quantization error
                 Pe(b) = sum((frameF(indexes, i) - X_hat(indexes)).^2);
                 
                 % Check if we found a proper a value
-                if Pe(b) < T(b)
+                if Pe(b) > T(b)
                     a(b) = a(b) + 1;
                 else
                     searching_a(b) = false;

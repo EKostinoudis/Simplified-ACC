@@ -46,9 +46,10 @@ if frameType == "ESH"
         swprev2T = fft(swprev2);
 
         % Take the polar representation of the transform (for the first 1024 points)
-        [f, r] = cart2pol(real(swT(1:rows/2)), imag(swT(1:rows/2)));
-        [fprev1, rprev1] = cart2pol(real(swprev1T(1:rows/2)), imag(swprev1T(1:rows/2)));
-        [fprev2, rprev2] = cart2pol(real(swprev2T(1:rows/2)), imag(swprev2T(1:rows/2)));
+        t = (1:rows/2).';
+        [f, r] = cart2pol(real(swT(t)), imag(swT(t)));
+        [fprev1, rprev1] = cart2pol(real(swprev1T(t)), imag(swprev1T(t)));
+        [fprev2, rprev2] = cart2pol(real(swprev2T(t)), imag(swprev2T(t)));
 
         % Calculate the predicted r and f
         rpred = 2 * rprev1 - rprev2;
@@ -82,6 +83,10 @@ if frameType == "ESH"
 
         % Tonality index
         tb = -0.299 - 0.43 * log(cb);
+        
+        % Make sure 0 < tb < 1
+        tb(tb<=0) = eps();
+        tb(tb>=1) = 1 - eps();
 
         % Calculate SNR
         SNR = tb * 18 + (1 - tb) * 6;
@@ -118,9 +123,10 @@ else
     swprev2T = fft(swprev2);
 
     % Take the polar representation of the transform (for the first 1024 points)
-    [f, r] = cart2pol(real(swT(1:rows/2)), imag(swT(1:rows/2)));
-    [fprev1, rprev1] = cart2pol(real(swprev1T(1:rows/2)), imag(swprev1T(1:rows/2)));
-    [fprev2, rprev2] = cart2pol(real(swprev2T(1:rows/2)), imag(swprev2T(1:rows/2)));
+    t = (1:rows/2).';
+    [f, r] = cart2pol(real(swT(t)), imag(swT(t)));
+    [fprev1, rprev1] = cart2pol(real(swprev1T(t)), imag(swprev1T(t)));
+    [fprev2, rprev2] = cart2pol(real(swprev2T(t)), imag(swprev2T(t)));
 
     % Calculate the predicted r and f
     rpred = 2 * rprev1 - rprev2;
@@ -152,17 +158,19 @@ else
     cb = ct ./ ecb;
     en = ecb ./ sum(sp, 2);
 
-    % Tonality index (0<tb<1)
+    % Tonality index 
     tb = -0.299 - 0.43 * log(cb);
-% tb(tb<=0) = eps();
-% tb(tb>=1) = 1 - eps();
+    
+    % Make sure 0 < tb < 1
+    tb(tb<=0) = eps();
+    tb(tb>=1) = 1 - eps();
+    
     % Calculate SNR
     SNR = tb * 18 + (1 - tb) * 6;
 
     % Calculate the power ratio
     bc = 10.^(-SNR / 10);
     
-
     % Calculate of actual energy threshold
     nb = en .* bc;
 
