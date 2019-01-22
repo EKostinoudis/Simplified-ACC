@@ -76,6 +76,9 @@ for i = 1:cols
     % Apply the filter
     frameFout(:, i) = filter(coefsOut, 1, frameFin(:, i));
 end
+
+% Make TNScoeffs 8 bit int
+TNScoeffs = int8(TNScoeffs);
 end
 
 % Takes the coefficients of the filter and check if they are stable
