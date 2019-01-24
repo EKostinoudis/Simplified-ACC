@@ -88,7 +88,7 @@ else
 end
 
 % M+1-point Kaiser window
-w = kaiser(M+1, a);
+w = kaiser(M+1, a * pi);
 
 % Cumulative sum of w
 cumw = cumsum(w);
@@ -106,7 +106,7 @@ else
 end
 
 % M+1-point Kaiser window
-w = kaiser(M+1, a);
+w = kaiser(M+1, a * pi);
 
 % Cumulative sum of w
 cumw = cumsum(w);
