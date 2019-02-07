@@ -25,7 +25,11 @@ if prevFrameType == "LSS"
 elseif prevFrameType == "LPS"
     frameType = "OLS";
     return
+elseif prevFrameType ~= "OLS" && prevFrameType ~= "ESH"
+    error('prevFrameType had none of the 4 possible values')
 end
+
+% If not, we check if the next frame is an EIGHT_SHORT_SEQUENCE to decide.
 
 % Numerator and denominator coefficients of the filter
 num = [0.7548 -0.7548];
@@ -36,22 +40,24 @@ filteredNextFrameT = filter(num, den, nextFrameT, [], 1);
 
 % Each segment (i) starts at 'segmentTimes(i) + 1'
 % and ends at 'segmentTimes(i + 1)'
+% Essentially: segmentDuration(i) = (segmentTimes(i), segmentTimes(i+1)]
 segmentTimes = 576:128:1600;
 
-% Energy of each segment
+% Energy estimation of each segment
 segEnergy = zeros(8, 2);
 for i = 1:8
-    segEnergy(i, :) = sum(filteredNextFrameT(segmentTimes(i) + 1: ...
-        segmentTimes(i + 1), :).^2);
+    segEnergy(i, :) = sum(filteredNextFrameT(segmentTimes(i) + 1:...
+                                             segmentTimes(i + 1), :).^2);
 end
 
-% Attack values 
+% Attack values of the segments 1 to 7.
 attackValues = zeros(7, 2);
 for i = 1:7
-    attackValues(i, :) = segEnergy(i + 1,:) .* i ./ (sum(segEnergy(1:i, :), 1));
+    attackValues(i, :) = segEnergy(i + 1,:) .* i ./ ...
+                        (sum(segEnergy(1:i, :), 1));
 end
 
-% Find the type of the i+1 frame 
+% Find the type of the i+1 frame
 isNextESH = any(segEnergy(2:end, :) > 1e-3 & attackValues > 10);
 
 if prevFrameType == "ESH"
@@ -66,8 +72,6 @@ elseif prevFrameType == "OLS"
     else 
         frameType = "OLS";
     end
-else
-    error('prevFrameType had none of the 4 possible values')
 end
 
 end
