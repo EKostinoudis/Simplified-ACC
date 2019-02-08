@@ -11,8 +11,16 @@ function SNR = demoAAC1(fNameIn, fNameOut)
 %
 
 audioIn = audioread(char(fNameIn));
+
+% Time coding
+tic
 AACSeq1 = AACoder1(fNameIn);
+codingTime = toc;
+
+% Time decoding
+tic
 audioOut = iAACoder1(AACSeq1, fNameOut);
+decodingTime = toc;
 
 % Remove the frames that aren't overlapping in audioIn and audioOut
 audioOut = audioOut(1025:end - 1024, :);
@@ -23,5 +31,11 @@ noise = audioIn - audioOut;
 
 % Calculate SNR
 SNR = [snr(audioIn(:, 1), noise(:, 1)); snr(audioIn(:, 2), noise(:, 2))];
+
+% Display times
+fprintf('Coding: time elapsed is %.4f seconds\n', codingTime);
+fprintf('Decoding: time elapsed is %.4f seconds\n', decodingTime);
+fprintf('Channel 1 SNR: %.4f dB\n', SNR(1));
+fprintf('Channel 2 SNR: %.4f dB\n', SNR(2));
 end
 

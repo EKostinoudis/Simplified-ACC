@@ -85,6 +85,7 @@ end
 
 % Functions
 function W = KBD_left(N)
+% KBD_LEFT Calculates the left Kaiser-Bessel-Derived window.
 M = N/2;
 
 if N == 2048 
@@ -103,6 +104,7 @@ W = sqrt(cumw(1:end-1) ./ cumw(end));
 end
 
 function W = KBD_right(N)
+% KBD_RIGHT Calculates the right Kaiser-Bessel-Derived window.
 M = N/2;
 
 if N == 2048 

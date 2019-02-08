@@ -41,6 +41,7 @@ filteredNextFrameT = filter(num, den, nextFrameT, [], 1);
 % Each segment (i) starts at 'segmentTimes(i) + 1'
 % and ends at 'segmentTimes(i + 1)'
 % Essentially: segmentDuration(i) = (segmentTimes(i), segmentTimes(i+1)]
+% That's a 'fix' for matlab's arrays starting at one.
 segmentTimes = 576:128:1600;
 
 % Energy estimation of each segment
