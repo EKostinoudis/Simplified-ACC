@@ -114,6 +114,8 @@ for frame = 1:totalFrames
     % Calculate SMR
     SMR_L = psycho(frameT(:, 1), AACSeq3(frame).frameType, frameTprev1(:, 1), frameTprev2(:, 1));
     SMR_R = psycho(frameT(:, 2), AACSeq3(frame).frameType, frameTprev1(:, 2), frameTprev2(:, 2));    
+    % EXTRA MODIF % SMR_L(:) = 1;
+    % EXTRA MODIF % SMR_R(:) = 1;
     
     [S_L, sfc_L, AACSeq3(frame).chl.G] = AACquantizer(frameF_L, AACSeq3(frame).frameType, SMR_L);
     [S_R, sfc_R, AACSeq3(frame).chr.G] = AACquantizer(frameF_R, AACSeq3(frame).frameType, SMR_R);
