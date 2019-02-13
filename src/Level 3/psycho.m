@@ -31,14 +31,17 @@ if frameType == "ESH"
         subFrames(:, i + 2) = frameT(index + 1:index + 256);
     end
     
+    % Calculate Hann window
+    t = (0:rows - 1).';
+    Hann = (0.5 - 0.5 * cos(pi * (t + 0.5) / (rows/2)));
+    
     % For every subframe of frameT calculate SMR
     SMR = zeros(length(table), 8);
     for i = 1:8
         % Calculate the complex spectrum of the input signals
-        t = (0:rows - 1).';
-        sw = subFrames(:, i + 2) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
-        swprev1 = subFrames(:, i + 1) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
-        swprev2 = subFrames(:, i) .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+        sw = subFrames(:, i + 2) .* Hann;
+        swprev1 = subFrames(:, i + 1) .* Hann;
+        swprev2 = subFrames(:, i) .* Hann;
 
         % Apply FFT to the signals
         swT = fft(sw);
@@ -110,12 +113,15 @@ else
     rows = 2048;
     bval = table(:, 5);
     NB = length(table);
+    
+    % Calculate Hann window
+    t = (0:rows - 1).';
+    Hann = (0.5 - 0.5 * cos(pi * (t + 0.5) / (rows/2)));
 
     % Calculate the complex spectrum of the input signals
-    t = (0:rows - 1).';
-    sw = frameT .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
-    swprev1 = frameTprev1 .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
-    swprev2 = frameTprev2 .* (0.5 - 0.5 * cos(pi * (t + 0.5) / rows));
+    sw = frameT .* Hann;
+    swprev1 = frameTprev1 .* Hann;
+    swprev2 = frameTprev2 .* Hann;
 
     % Apply FFT to the signals
     swT = fft(sw);
