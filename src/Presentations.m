@@ -24,7 +24,9 @@ figure('name', 'Demo 1 - Error plot')
 plot(noise_1)
 title('Error plot')
 legend(['Channel 1'; 'Channel 2'], 'Location', 'best')
-print([plotpath 'Demo 1 - Error plot'], '-dpng')
+if save_files == 1
+    print([plotpath 'Demo 1 - Error plot'], '-dpng')
+end
 
 % --- Frame Type bar plot ---
 figure('name', 'Demo 1 - Frame Types')
@@ -40,4 +42,6 @@ end
 
 bar(frameTypes, frameTypeSums)
 title('Frame types in the sample')
-print([plotpath 'Demo 1 - Frame Types'], '-dpng')
+if save_files == 1
+    print([plotpath 'Demo 1 - Frame Types'], '-dpng')
+end
