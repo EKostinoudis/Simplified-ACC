@@ -1,6 +1,5 @@
 *~
 *.asv
 out.wav
-AACSeq3.mat
-*.png
 workspace.mat
+demo*.wav
