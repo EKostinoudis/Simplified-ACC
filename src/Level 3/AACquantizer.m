@@ -62,7 +62,7 @@ for i = 1:cols
     T = P ./ SMR(:, i);
     
     % Init scalefactor gain
-    a = zeros(NB, 1) + (16 / 3 * (log2(max(frameF(:, i))^(3/4)) / 8191));
+    a = zeros(NB, 1) + (16 / 3 * log2(max(frameF(:, i))^(3/4) / 8191));
     
     Pe = zeros(NB, 1);
     X_hat = zeros(rows, 1);
@@ -75,14 +75,14 @@ for i = 1:cols
                 indexes = wlow(b):whigh(b);
 
                 % Quantize and dequantize MDCT coeffs
-                S(indexes, i) = sign(frameF(indexes, i)) .* round((abs(frameF(indexes, i)) * 2^(a(b)/4)).^(3/4) + 0.4054);
-                X_hat(indexes) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(-a(b)/4);
+                S(indexes, i) = sign(frameF(indexes, i)) .* fix((abs(frameF(indexes, i)) * 2^(-a(b)/4)).^(3/4) + 0.4054);
+                X_hat(indexes) = sign(S(indexes, i)) .* abs(S(indexes, i)).^(4/3) * 2^(a(b)/4);
 
                 % Calculate the power of the quantization error
                 Pe(b) = sum((frameF(indexes, i) - X_hat(indexes)).^2);
                 
                 % Check if we found a proper a value
-                if Pe(b) > T(b)
+                if Pe(b) < T(b)
                     a(b) = a(b) + 1;
                 else
                     searching_a(b) = false;
@@ -97,6 +97,9 @@ for i = 1:cols
             if abs(a(j+1) - a(j)) > 60
                 [~, pos] = max([a(j); a(j+1)]);
                 a(j + pos - 1) = a(j + pos - 1) - 1;
+                indexes = wlow(j + pos - 1):whigh(j + pos - 1);
+                S(indexes, i) = sign(frameF(indexes, i)) .* ... 
+                    fix((abs(frameF(indexes, i)) * 2^(-a(j + pos - 1)/4)).^(3/4) + 0.4054);
             end
         end
     end
