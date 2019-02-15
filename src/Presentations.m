@@ -131,26 +131,49 @@ SNR_3 = [snr(audioIn_3(:, 1), noise_3(:, 1)); snr(audioIn_3(:, 2), noise_3(:, 2)
 %% Demo3 -- Plots (Requires: Demo3 -- Data)
 % --- Error plot ---
 figure('name', 'Demo 3 - Error plot')
+subplot(2,1,1)
 hold on
-plot(audioIn_3)
-plot(noise_3)
-title('Signal and noise plot')
-legend('Channel 1', 'Channel 2', 'Noise: Channel 1', 'Noise: Channel 2', 'Location', 'best')
+plot(audioIn_3(:, 1))
+plot(noise_3(:, 1))
+title('Signal and noise plot: Channel 1')
+legend('Signal', 'Noise', 'Location', 'best')
+
+subplot(2,1,2)
+hold on
+plot(audioIn_3(:,2))
+plot(noise_3(:, 2))
+title('Signal and noise plot: Channel 2')
+legend('Signal', 'Noise', 'Location', 'best')
 if save_files == 1
     print([plotpath 'Demo 3 - Signal and noise plot'], '-dpng')
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% frameTypes = [AACSeq3(:).frameType];
-% ESHframes = frameTypes == "ESH";
-% bitrate = calculateBitrate(AACSeq3);
-% 
-% scatter(find(ESHframes == true), bitrate(ESHframes))
-% plot(bitrate./1024)
-% hold on
-% scatter(find(ESHframes == true), bitrate(ESHframes)./1024)
+% --- Bitrate plot ---
+figure('name', 'Demo 3 - Bitrate')
+frameTypes = [AACSeq3(:).frameType];
+ESHframes = frameTypes == "ESH";
+bitrate = calculateBitrate(AACSeq3);
+
+hold on
+plot(bitrate./1024, 'HandleVisibility', 'off')
+scatter(find(ESHframes == true), bitrate(ESHframes)./1024)
+title('Bits per frame')
+ylabel('Kbits')
+xlabel('frame')
+lg = legend('ESH', 'Location', 'best');
+title(lg, 'Frame Type')
+
+if save_files == 1
+    print([plotpath 'Demo 3 - Bitrate'], '-dpng')
+end
+
+bitrate_mean = mean(bitrate./1024);
+fprintf('Mean bitrate is: %f\n', bitrate_mean);
+
+%% ----------------------------------------------------------- %%
 
 
+%% Functions
 function bitrate = calculateBitrate(AACSeq3)
 constBits = 0;
 constBits = constBits + 2; % FrameType fits in 2 bits
