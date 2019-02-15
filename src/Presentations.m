@@ -139,3 +139,35 @@ legend('Channel 1', 'Channel 2', 'Noise: Channel 1', 'Noise: Channel 2', 'Locati
 if save_files == 1
     print([plotpath 'Demo 3 - Signal and noise plot'], '-dpng')
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% frameTypes = [AACSeq3(:).frameType];
+% ESHframes = frameTypes == "ESH";
+% bitrate = calculateBitrate(AACSeq3);
+% 
+% scatter(find(ESHframes == true), bitrate(ESHframes))
+% plot(bitrate./1024)
+% hold on
+% scatter(find(ESHframes == true), bitrate(ESHframes)./1024)
+
+
+function bitrate = calculateBitrate(AACSeq3)
+constBits = 0;
+constBits = constBits + 2; % FrameType fits in 2 bits
+constBits = constBits + 1; % WinType fits in 1 bit.
+constBits = constBits + 2 * 16; % For the 2 channels' codebooks.
+constBits = constBits + 2 * 64; % For the 2 channels' G.
+
+bitrate = zeros(length(AACSeq3), 1) + constBits;
+
+for i = 1:length(AACSeq3)
+    bitrate(i) = bitrate(i) + length(AACSeq3(i).chl.stream);
+    bitrate(i) = bitrate(i) + length(AACSeq3(i).chr.stream);
+    
+    bitrate(i) = bitrate(i) + length(AACSeq3(i).chl.sfc);
+    bitrate(i) = bitrate(i) + length(AACSeq3(i).chr.sfc);
+    
+    % Add TNS coeffs size.
+    bitrate(i) = bitrate(i) + 2 * 4 * 4 * (size(AACSeq3(i).chl.TNScoeffs,2));
+end
+end
