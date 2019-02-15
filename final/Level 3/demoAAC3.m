@@ -69,5 +69,11 @@ fprintf('Compressed ratio: %.4f %% (x %.4f)\n', 100 * maxCompSize / (inputSize *
 fprintf('Channel 1 SNR: %.4f dB\n', SNR(1));
 fprintf('Channel 2 SNR: %.4f dB\n', SNR(2));
 
+% Calculate the bitrate of the compressed audio signal.
+bitrate = maxCompSize / ((length(audioOut) + 1024) / 48000);
+
+% The compression factor.
+compression = inputSize * 8 / maxCompSize;
+
 end
 
