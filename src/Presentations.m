@@ -49,6 +49,51 @@ if save_files == 1
     print([plotpath 'Demo 1 - Frame Types'], '-dpng')
 end
 
+%% Demo1 -- ESH frames
+figure('name', 'Demo 1 - ESH frames')
+
+hold on
+plot(audioIn(:, 1))
+flags = zeros(3, 1);
+for i = 1 : length(AACSeq1)
+    if AACSeq1(i).frameType == "ESH"
+        currentIndex = 1024 * (i - 1) + 1;
+        frame = audioIn(currentIndex:currentIndex+2047,1);
+        if flags(1) == 0
+            plot(currentIndex:currentIndex+2047, frame, 'r');
+        else
+            plot(currentIndex:currentIndex+2047, frame, 'r', 'HandleVisibility', 'off');
+        end
+        flags(1) = 1;
+    elseif AACSeq1(i).frameType == "LPS"
+        currentIndex = 1024 * (i - 1) + 1025;
+        frame = audioIn(currentIndex:currentIndex+1023,1);
+        if flags(2) == 0
+            plot(currentIndex:currentIndex+1023, frame, 'color', [203, 153, 255]/255);
+        else
+            plot(currentIndex:currentIndex+1023, frame, 'color', [203, 153, 255]/255, 'HandleVisibility', 'off');
+        end
+        flags(2) = 1;
+    elseif AACSeq1(i).frameType == "LSS"
+        currentIndex = 1024 * (i - 1) + 1;
+        frame = audioIn(currentIndex:currentIndex+1023,1);
+        if flags(3) == 0
+            plot(currentIndex:currentIndex+1023, frame, 'y');
+        else
+            plot(currentIndex:currentIndex+1023, frame, 'y', 'HandleVisibility', 'off');
+        end
+        flags(3) = 1;
+    end
+end
+
+title('Channel 1')
+lg = legend('OLS', 'LSS', 'ESH', 'LPS', 'Location', 'best');
+title(lg, 'Frame Type')
+
+if save_files == 1
+    print([plotpath 'Demo 1 - ESH frames'], '-dpng')
+end
+
 %% Demo2 -- Data
 AACSeq2 = AACoder2(fNameIn);
 audioOut_2 = iAACoder2(AACSeq2, 'demo2.wav');

@@ -93,7 +93,7 @@ for frame = 1:totalFrames
     end
         
     % Chose window type here ("KBD" or "SIN")
-    AACSeq3(frame).winType = "SIN";
+    AACSeq3(frame).winType = "KBD";
     
     % Calculate the MDCT coeficients
     frameF = filterbank(frameT, AACSeq3(frame).frameType, AACSeq3(frame).winType);
